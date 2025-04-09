@@ -2,8 +2,6 @@ from tkinter import *
 from tkinter import filedialog, messagebox
 from PIL import Image, ImageTk
 import os
-import struct
-import numpy as np
 
 class ImageProcessor:
     def __init__(self):
@@ -16,7 +14,6 @@ class ImageProcessor:
         self.processed_image = None
         self.original_matrix = None
         self.processed_matrix = None
-        self.display_scale = 1.0
         
         # Create GUI
         self.create_gui()
@@ -70,14 +67,10 @@ class ImageProcessor:
             )
             if file_path:
                 self.update_status("Loading image...")
-                # Load image using Pillow
-                self.original_image = Image.open(file_path).convert('L')  # Convert to grayscale
+                self.original_image = Image.open(file_path).convert('L')
                 self.processed_image = self.original_image.copy()
-                
-                # Convert to matrix
                 self.original_matrix = self.image_to_matrix(self.original_image)
                 self.processed_matrix = [row[:] for row in self.original_matrix]
-                
                 self.display_images()
                 self.update_status(f"Image loaded: {os.path.basename(file_path)}")
         except Exception as e:
@@ -85,7 +78,6 @@ class ImageProcessor:
             messagebox.showerror("Error", f"Failed to load image: {str(e)}")
     
     def image_to_matrix(self, image):
-        """Convert PIL Image to matrix"""
         width, height = image.size
         matrix = []
         for y in range(height):
@@ -96,7 +88,6 @@ class ImageProcessor:
         return matrix
     
     def matrix_to_image(self, matrix):
-        """Convert matrix to PIL Image"""
         height = len(matrix)
         width = len(matrix[0])
         image = Image.new('L', (width, height))
@@ -200,16 +191,13 @@ class ImageProcessor:
     
     def display_images(self):
         try:
-            # Resize images for display
             display_size = (300, 300)
             original_display = self.original_image.resize(display_size, Image.Resampling.LANCZOS)
             processed_display = self.processed_image.resize(display_size, Image.Resampling.LANCZOS)
             
-            # Convert to PhotoImage
             original_photo = ImageTk.PhotoImage(original_display)
             processed_photo = ImageTk.PhotoImage(processed_display)
             
-            # Update labels
             self.original_label.config(image=original_photo)
             self.original_label.image = original_photo
             self.processed_label.config(image=processed_photo)
